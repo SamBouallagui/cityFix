@@ -1,0 +1,7 @@
+{
+  "name": "cityfix-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
