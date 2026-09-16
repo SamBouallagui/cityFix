@@ -1,7 +1,6 @@
-import { Service } from '@angular/core';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Storage } from '@ionic/storage';
+import { Storage } from '@ionic/storage-angular';
 import { Observable, from, tap } from 'rxjs';
 
 //describe the shape of the auth response
@@ -23,7 +22,7 @@ export class Auth {
   constructor(private http: HttpClient, private storage: Storage) {
     this.initStorage();
   }
-  //initialize ionic storgae
+  //initialize ionic storage
   private async initStorage() {
     this.storageInstance = await this.storage.create();
   }
