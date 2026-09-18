@@ -67,7 +67,7 @@ export class NewReportPage {
     const { lat, lng } = this.location;
 
     if (!this.map) {
-      this.map = L.map(this.mapContainer.nativeElement).setView([lat, lng], 16);        zoomControl: false,
+      this.map = L.map(this.mapContainer.nativeElement).setView([lat, lng], 16);
 
 
       // OpenStreetMap's free map data

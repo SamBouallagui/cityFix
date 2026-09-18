@@ -64,7 +64,8 @@ export class RegisterPage {
           },
           error: async (err) => {
             await this.ui.hideLoading();
-            this.errorMessage = err.error?.error || 'Registration failed. Please try again.';
+
+            this.errorMessage = err.error?.message || err.error?.error || 'Registration failed. Please try again.';
           },
         });
     }

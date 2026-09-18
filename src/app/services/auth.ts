@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Storage } from '@ionic/storage-angular';
-import { Observable, tap } from 'rxjs';
+import { Observable, mergeMap } from 'rxjs';
 import { inject } from '@angular/core';
+import { environment } from '../../environments/environment';
 //describe the shape of the auth response
 export interface AuthResponse{
   token: string;
@@ -16,7 +17,7 @@ export interface AuthResponse{
 //just one instance available across the app
 @Injectable({providedIn: 'root'})
 export class Auth {
-  private apiUrl = 'http://localhost:3000/api/auth';
+  private apiUrl = `${environment.apiUrl}/auth`;
   private storageInstance: Storage | null = null;
   private storageReady: Promise<void>;
   private http = inject(HttpClient);
@@ -33,16 +34,15 @@ export class Auth {
   }
   login(email:string,password:string):Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
-      //saves the token without modifying the data
-      tap((res) => {
-              // wait for storage before writing
-              this.storageReady.then(() => {
-                this.storageInstance?.set('token', res.token);
-                this.storageInstance?.set('user', res.user);
-              });
-            })
-          );
-        }
+      // wait for session to be persisted before the request completes
+      mergeMap(async (res) => {
+        await this.storageReady;
+        await this.storageInstance?.set('token', res.token);
+        await this.storageInstance?.set('user', res.user);
+        return res;
+      })
+    );
+  }
   async logout() {
     await this.storageInstance?.remove('token');
     await this.storageInstance?.remove('user');

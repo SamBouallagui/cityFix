@@ -15,7 +15,7 @@ export const routes: Routes = [
   {
     path: 'tabs',
     loadComponent: () => import('./pages/tabs/tabs.page').then(m => m.TabsPage),
-    canActivate: [roleGuard('citizen')], // guards the WHOLE tabs section at once — no need to repeat it on each child
+    canActivate: [roleGuard('citizen')],
     children: [
       {
         path: 'my-reports',
@@ -37,9 +37,5 @@ export const routes: Routes = [
     path: 'agent-dashboard',
     loadComponent: () => import('./pages/agent-dashboard/agent-dashboard.page').then(m => m.AgentDashboardPage),
     canActivate: [roleGuard('agent')],
-  },
-  {
-    path: 'nearby-reports',
-    loadComponent: () => import('./pages/nearby-reports/nearby-reports.page').then( m => m.NearbyReportsPage)
   },
 ];

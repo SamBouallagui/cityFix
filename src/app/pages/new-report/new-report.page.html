@@ -36,23 +36,33 @@
     {{ location ? 'Location captured' : 'Use my current location' }}
   </ion-button>
 
-  <div #locationMap class="location-map" *ngIf="location"></div>
-<p class="map-hint" *ngIf="location">Tap the map or drag the pin to fine-tune the exact location.</p>
+  @if (location) {
+  <div #locationMap class="location-map"></div>
+  <p class="map-hint">Tap the map or drag the pin to fine-tune the exact location.</p>
+}
   <ion-button expand="block" fill="outline" (click)="takePhoto()" class="action-btn">
     <ion-icon name="camera-outline" slot="start"></ion-icon>
     {{ photoDataUrl ? 'Retake photo' : 'Add a photo (optional)' }}
   </ion-button>
   <!-- only loads once in view like recyclerview -->
-  <ion-img *ngIf="photoDataUrl" [src]="photoDataUrl" class="photo-preview"></ion-img>
+  @if (photoDataUrl) {
+    <ion-img [src]="photoDataUrl" class="photo-preview"></ion-img>
+  }
 
   <ion-button expand="block" shape="round" class="login-btn" (click)="submit()" [disabled]="submitting">
     <!--spinner for loading indicator -->
-    <ion-spinner *ngIf="submitting" name="crescent"></ion-spinner>
-    <span *ngIf="!submitting">Submit Report</span>
+    @if (submitting) {
+      <ion-spinner name="crescent"></ion-spinner>
+    }
+    @if (!submitting) {
+      <span>Submit Report</span>
+    }
   </ion-button>
 
-  <ion-text color="danger" *ngIf="errorMessage">
+@if (errorMessage) {
+  <ion-text color="danger">
     <p class="error-text">{{ errorMessage }}</p>
   </ion-text>
+}
 
 </ion-content>

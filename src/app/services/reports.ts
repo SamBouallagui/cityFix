@@ -1,6 +1,7 @@
 import { Injectable,inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
+import { environment } from '../../environments/environment';
 
 //model for report data
 export interface Report {
@@ -14,10 +15,19 @@ export interface Report {
   location: { type: string; coordinates: [number, number] };
   reporter?: { id: number; name: string; email: string };
 }
-
+export interface NearbyReport {
+  id: number;
+  title: string;
+  description: string | null;
+  category: string;
+  status: string;
+  latitude: number;
+  longitude: number;
+  distance_meters: number;
+}
 @Injectable({ providedIn: 'root' })
 export class Reports{
-  private apiUrl = 'http://localhost:3000/api/reports';
+  private apiUrl = `${environment.apiUrl}/reports`;
   private http = inject(HttpClient);
   //auth interceptor attached JWT automatically
   getReports(): Observable<Report[]>{
@@ -39,8 +49,8 @@ export class Reports{
       return this.http.patch<Report>(`${this.apiUrl}/${id}/status`, { status });
   }
 
-  getNearby(lat: number, lng: number, radiusMeters: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/nearby`, {
+  getNearby(lat: number, lng: number, radiusMeters: number): Observable<NearbyReport[]> {
+    return this.http.get<NearbyReport[]>(`${this.apiUrl}/nearby`, {
       params: { lat: lat.toString(), lng: lng.toString(), radius: radiusMeters.toString() },
     });
   }

@@ -7,13 +7,15 @@
 <ion-content [fullscreen]="true">
   <div class="radius-control">
     <ion-label>Search radius: {{ radiusKm }} km</ion-label>
-    <ion-range min="0.5" max="5" step="0.5" [(ngModel)]="radiusKm" (ionChange)="loadNearby()"></ion-range>
+    <ion-range min="0.5" max="5" step="0.5" [(ngModel)]="radiusKm" (ionKnobMoveEnd)="loadNearby()"></ion-range>
   </div>
 
   <div #map class="nearby-map"></div>
 
-  <div class="empty-state" *ngIf="loaded && reports.length === 0">
-    <ion-icon name="navigate-outline"></ion-icon>
-    <p>No reports found nearby. Try increasing the radius.</p>
-  </div>
+  @if (loaded && reports.length === 0) {
+    <div class="empty-state">
+      <ion-icon name="navigate-outline"></ion-icon>
+      <p>No reports found nearby. Try increasing the radius.</p>
+    </div>
+  }
 </ion-content>

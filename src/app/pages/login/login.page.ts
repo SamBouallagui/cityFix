@@ -40,6 +40,18 @@ export class LoginPage {
   errorMessage = '';
   private ui = inject(Ui);
 
+  // if a session already exists, skip the login screen and jump straight to
+  // the right dashboard (prevents getting dumped back to login on app restart)
+  async ionViewWillEnter() {
+    if (await this.auth.isLoggedIn()) {
+      const user = await this.auth.getUser();
+      this.router.navigateByUrl(
+        user?.role === 'agent' ? '/agent-dashboard' : '/tabs/my-reports',
+        { replaceUrl: true } // so the back button can't return to login
+      );
+    }
+  }
+
   async onLogin() {
     this.errorMessage = '';
     await this.ui.showLoading('Logging in...');
@@ -50,7 +62,7 @@ export class LoginPage {
         if (res.user.role === 'agent') {
           this.router.navigateByUrl('/agent-dashboard');
         } else {
-              this.router.navigateByUrl('/tabs/my-reports'); // updated below, Part B
+              this.router.navigateByUrl('/tabs/my-reports');
           }
       },
       error: async(err) => {

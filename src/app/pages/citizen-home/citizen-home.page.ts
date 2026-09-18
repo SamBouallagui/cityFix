@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../services/auth';
@@ -7,7 +7,10 @@ import {
   IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon,
   IonContent, IonRefresher, IonRefresherContent,
   IonCard, IonCardContent, IonBadge, IonFab, IonFabButton,
+  ModalController,
 } from '@ionic/angular';
+import { ReportDetailModalComponent } from '../../components/report-detail-modal/report-detail-modal.component';
+
 import { addIcons } from 'ionicons';
 import {
   logOutOutline, documentTextOutline, add,
@@ -25,23 +28,36 @@ addIcons({ logOutOutline, documentTextOutline, add, constructOutline, bulbOutlin
       IonCard, IonCardContent, IonBadge, IonFab, IonFabButton,
     ]
 })
-export class CitizenHomePage implements OnInit {
+export class CitizenHomePage {
   private auth = inject(Auth);
   private reportsService = inject(Reports);
   private router = inject(Router);
-
+  private modalCtrl = inject(ModalController);
+  private cdr = inject(ChangeDetectorRef);
   reports: Report[] = [];
 
-  ngOnInit(){
+  // Ionic lifecycle fires every time this tab becomes Visible
+
+  ionViewWillEnter(){
     this.loadReports();
   }
-
+  async openReport(report: Report) {
+    const modal = await this.modalCtrl.create({
+      component: ReportDetailModalComponent,
+      componentProps: { report, readOnly: true },
+      breakpoints: [0, 0.6, 0.9],
+      initialBreakpoint: 0.6,
+    });
+    await modal.present();
+  }
   loadReports(event?: any) {
     this.reportsService.getReports().subscribe({
       next: (data) => {
         //stops spinner after getting the data
         this.reports = data;
         event?.target.complete();
+
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('failed to load reports', err);

@@ -4,7 +4,8 @@ import * as L from 'leaflet';
 import { Geolocation } from '@capacitor/geolocation';
 import { Reports } from '../../services/reports';
 import { Ui } from '../../services/ui';
-
+import { NearbyReport } from '../../services/reports';
+import { CommonModule } from '@angular/common';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonRange, IonLabel, IonIcon } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { navigateOutline } from 'ionicons/icons';
@@ -15,7 +16,7 @@ addIcons({ navigateOutline });
   standalone: true,
   templateUrl: './nearby-reports.page.html',
   styleUrls: ['./nearby-reports.page.scss'],
-  imports: [FormsModule, IonHeader, IonToolbar, IonTitle, IonContent, IonRange, IonLabel, IonIcon],
+  imports: [CommonModule,FormsModule, IonHeader, IonToolbar, IonTitle, IonContent, IonRange, IonLabel, IonIcon],
 })
 export class NearbyReportsPage {
   private reportsService = inject(Reports);
@@ -26,13 +27,18 @@ export class NearbyReportsPage {
   private markers: L.CircleMarker[] = [];
 
   radiusKm = 2;
-  reports: any[] = [];
+  reports: NearbyReport[] = [];
   loaded = false;
   private myLocation: { lat: number; lng: number } | null = null;
 
+  // Fires every time this tab becomes visibl
   async ionViewDidEnter() {
     if (!this.myLocation) await this.getMyLocation();
-    if (!this.map) this.initMap();
+    if (!this.map) {
+      this.initMap();
+    } else {
+      setTimeout(() => this.map?.invalidateSize(), 100);
+    }
     this.loadNearby();
   }
 
@@ -83,6 +89,8 @@ export class NearbyReportsPage {
     this.markers.forEach((m) => m.remove());
     this.markers = [];
 
+    const bounds = L.latLngBounds([]); // empty bounds, extended with each report
+
     this.reports.forEach((r) => {
       const marker = L.circleMarker([r.latitude, r.longitude], {
         radius: 8,
@@ -94,6 +102,15 @@ export class NearbyReportsPage {
 
       marker.bindPopup(`<strong>${r.title}</strong><br>${Math.round(r.distance_meters)}m away`);
       this.markers.push(marker);
+      bounds.extend([r.latitude, r.longitude]); // add this report to the autozoom range
     });
+
+    if (this.reports.length > 0) {
+
+      this.map.fitBounds(bounds, { padding: [40, 40], maxZoom: 16 });
+    } else if (this.myLocation) {
+      // no reports in range: stay centered on the user
+      this.map.setView([this.myLocation.lat, this.myLocation.lng], 13);
+    }
   }
 }

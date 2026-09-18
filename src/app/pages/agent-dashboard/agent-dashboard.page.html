@@ -10,11 +10,43 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <!-- scrollable to make all the items fit on the screen -->
+  <ion-segment
+    [value]="selectedCategory"
+    (ionChange)="onCategoryChange($event.detail.value)"
+    scrollable
+    class="category-filter"
+  >
+    <ion-segment-button value="all"><ion-label>All</ion-label></ion-segment-button>
+    <ion-segment-button value="pothole"><ion-label>Potholes</ion-label></ion-segment-button>
+    <ion-segment-button value="streetlight"><ion-label>Streetlights</ion-label></ion-segment-button>
+    <ion-segment-button value="garbage"><ion-label>Garbage</ion-label></ion-segment-button>
+    <ion-segment-button value="other"><ion-label>Other</ion-label></ion-segment-button>
+  </ion-segment>
+
+  <!-- zone tools: toggle drawing a new zone; click an existing polygon to analyze it -->
+  <div class="zone-tools">
+    <ion-button
+      size="small"
+      fill="solid"
+      [color]="drawingZone ? 'danger' : 'primary'"
+      (click)="toggleDraw()"
+    >
+      <ion-icon slot="start" [name]="drawingZone ? 'close-circle-outline' : 'add-circle-outline'"></ion-icon>
+      {{ drawingZone ? 'Cancel drawing' : 'Draw new zone' }}
+    </ion-button>
+    @if (drawingZone) {
+      <p class="zone-hint drawing">Click points on the map to trace the boundary, then click the first point to finish.</p>
+    } @else {
+      <p class="zone-hint">Tap a colored zone to analyze the reports inside it.</p>
+    }
+  </div>
+
   <div #map class="dashboard-map"></div>
 
   <div class="legend">
-    <div class="legend-item"><span class="dot pending"></span> Pending</div>
-    <div class="legend-item"><span class="dot in_progress"></span> In Progress</div>
-    <div class="legend-item"><span class="dot resolved"></span> Resolved</div>
+    <div class="legend-item"><span class="dot pending"></span> Pending ({{ statusCounts.pending }})</div>
+    <div class="legend-item"><span class="dot in_progress"></span> In Progress ({{ statusCounts.in_progress }})</div>
+    <div class="legend-item"><span class="dot resolved"></span> Resolved ({{ statusCounts.resolved }})</div>
   </div>
 </ion-content>

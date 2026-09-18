@@ -10,18 +10,34 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-img *ngIf="report.photoUrl" [src]="report.photoUrl" class="detail-photo"></ion-img>
+  @if (report.photoUrl) {
+    <ion-img [src]="report.photoUrl" class="detail-photo"></ion-img>
+  }
 
-  <p class="detail-desc" *ngIf="report.description">{{ report.description }}</p>
-  <p class="detail-reporter" *ngIf="report.reporter">
-    Reported by {{ report.reporter.name }} on {{ report.createdAt | date:'medium' }}
-  </p>
+  @if (report.description) {
+    <p class="detail-desc">{{ report.description }}</p>
+  }
+  @if (report.reporter) {
+    <p class="detail-reporter">
+      Reported by {{ report.reporter.name }} on {{ report.createdAt | date:'medium' }}
+    </p>
+  }
 
-  <h3>Update Status</h3>
-  <!-- segment is used to select just one status of the report, ionChange is event and happens when switching between segmenets -->
-  <ion-segment [value]="report.status" (ionChange)="updateStatus($event.detail.value)">
-    <ion-segment-button value="pending"><ion-label>Pending</ion-label></ion-segment-button>
-    <ion-segment-button value="in_progress"><ion-label>In Progress</ion-label></ion-segment-button>
-    <ion-segment-button value="resolved"><ion-label>Resolved</ion-label></ion-segment-button>
-  </ion-segment>
+  <!-- hides the status segment when in read-only mode -->
+  @if (!readOnly) {
+    <div>
+      <h3>Update Status</h3>
+      <ion-segment [value]="report.status" (ionChange)="updateStatus($event.detail.value)">
+        <ion-segment-button value="pending"><ion-label>Pending</ion-label></ion-segment-button>
+        <ion-segment-button value="in_progress"><ion-label>In Progress</ion-label></ion-segment-button>
+        <ion-segment-button value="resolved"><ion-label>Resolved</ion-label></ion-segment-button>
+      </ion-segment>
+    </div>
+  }
+
+  @if (readOnly) {
+    <ion-badge [color]="badgeColor(report.status)" class="status-badge">
+      {{ statusLabel(report.status) }}
+    </ion-badge>
+  }
 </ion-content>

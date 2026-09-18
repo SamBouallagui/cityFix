@@ -30,9 +30,11 @@
               Register
             </ion-button>
 
-            <ion-text color="danger" *ngIf="errorMessage">
-              <p class="error-text">{{ errorMessage }}</p>
-            </ion-text>
+            @if (errorMessage) {
+              <ion-text color="danger">
+                <p class="error-text">{{ errorMessage }}</p>
+              </ion-text>
+            }
 
             <ion-button expand="block" fill="clear" routerLink="/login">
               Already have an account?&nbsp;<strong>Login</strong>
