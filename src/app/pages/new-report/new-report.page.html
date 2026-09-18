@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <!-- for back button to citizen home -->
+      <ion-back-button defaultHref="/tabs/my-reports"></ion-back-button>
+    </ion-buttons>
+    <ion-title>New Report</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <ion-item lines="full" class="input-item">
+    <ion-label position="floating">Title</ion-label>
+    <ion-input type="text" [(ngModel)]="title"></ion-input>
+  </ion-item>
+
+  <ion-item lines="full" class="input-item">
+    <ion-label position="floating">Category</ion-label>
+    <ion-select [(ngModel)]="category" interface="action-sheet">
+      <ion-select-option value="pothole">Pothole</ion-select-option>
+      <ion-select-option value="streetlight">Broken Streetlight</ion-select-option>
+      <ion-select-option value="garbage">Garbage / Dumping</ion-select-option>
+      <ion-select-option value="other">Other</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item lines="full" class="input-item">
+    <ion-label position="floating">Description (optional)</ion-label>
+    <!--autogrow means the size grows as you type -->
+    <ion-textarea [(ngModel)]="description" [autoGrow]="true"></ion-textarea>
+  </ion-item>
+
+  <ion-button expand="block" fill="outline" (click)="getLocation()" class="action-btn">
+    <ion-icon name="locate-outline" slot="start"></ion-icon>
+    {{ location ? 'Location captured' : 'Use my current location' }}
+  </ion-button>
+
+  <div #locationMap class="location-map" *ngIf="location"></div>
+<p class="map-hint" *ngIf="location">Tap the map or drag the pin to fine-tune the exact location.</p>
+  <ion-button expand="block" fill="outline" (click)="takePhoto()" class="action-btn">
+    <ion-icon name="camera-outline" slot="start"></ion-icon>
+    {{ photoDataUrl ? 'Retake photo' : 'Add a photo (optional)' }}
+  </ion-button>
+  <!-- only loads once in view like recyclerview -->
+  <ion-img *ngIf="photoDataUrl" [src]="photoDataUrl" class="photo-preview"></ion-img>
+
+  <ion-button expand="block" shape="round" class="login-btn" (click)="submit()" [disabled]="submitting">
+    <!--spinner for loading indicator -->
+    <ion-spinner *ngIf="submitting" name="crescent"></ion-spinner>
+    <span *ngIf="!submitting">Submit Report</span>
+  </ion-button>
+
+  <ion-text color="danger" *ngIf="errorMessage">
+    <p class="error-text">{{ errorMessage }}</p>
+  </ion-text>
+
+</ion-content>

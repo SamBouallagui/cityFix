@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-title>Agent Dashboard</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div #map class="dashboard-map"></div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="dot pending"></span> Pending</div>
+    <div class="legend-item"><span class="dot in_progress"></span> In Progress</div>
+    <div class="legend-item"><span class="dot resolved"></span> Resolved</div>
+  </div>
+</ion-content>

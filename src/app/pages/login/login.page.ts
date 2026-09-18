@@ -17,6 +17,7 @@ import {
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { mailOutline, lockClosedOutline, location } from 'ionicons/icons';
+import { Ui } from '../../services/ui';
 
 addIcons({ mailOutline, lockClosedOutline, location });
 @Component({
@@ -37,20 +38,23 @@ export class LoginPage {
   email = '';
   password = '';
   errorMessage = '';
+  private ui = inject(Ui);
 
-  onLogin() {
+  async onLogin() {
     this.errorMessage = '';
-
+    await this.ui.showLoading('Logging in...');
     this.auth.login(this.email, this.password).subscribe({
-      next: (res) => {
+      next: async(res) => {
+        await this.ui.hideLoading();
         // redirect based on user role
         if (res.user.role === 'agent') {
           this.router.navigateByUrl('/agent-dashboard');
         } else {
-          this.router.navigateByUrl('/citizen-home');
-        }
+              this.router.navigateByUrl('/tabs/my-reports'); // updated below, Part B
+          }
       },
-      error: (err) => {
+      error: async(err) => {
+        await this.ui.hideLoading();
         // err.error is the JSON body Express API sent back
         this.errorMessage = err.error?.error || 'Login failed. pplease try again.';
       },

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Storage } from '@ionic/storage-angular';
-import { Observable, from, tap } from 'rxjs';
-
+import { Observable, tap } from 'rxjs';
+import { inject } from '@angular/core';
 //describe the shape of the auth response
 export interface AuthResponse{
   token: string;
@@ -18,10 +18,12 @@ export interface AuthResponse{
 export class Auth {
   private apiUrl = 'http://localhost:3000/api/auth';
   private storageInstance: Storage | null = null;
-
-  constructor(private http: HttpClient, private storage: Storage) {
-    this.initStorage();
-  }
+  private storageReady: Promise<void>;
+  private http = inject(HttpClient);
+  private storage = inject(Storage);
+  constructor() {
+      this.storageReady = this.initStorage();
+    }
   //initialize ionic storage
   private async initStorage() {
     this.storageInstance = await this.storage.create();
@@ -33,19 +35,24 @@ export class Auth {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
       //saves the token without modifying the data
       tap((res) => {
-        this.storageInstance?.set('token', res.token);
-        this.storageInstance?.set('user', res.user);
-      })
-    );
-  }
+              // wait for storage before writing
+              this.storageReady.then(() => {
+                this.storageInstance?.set('token', res.token);
+                this.storageInstance?.set('user', res.user);
+              });
+            })
+          );
+        }
   async logout() {
     await this.storageInstance?.remove('token');
     await this.storageInstance?.remove('user');
   }
   async getToken(): Promise<string | null> {
+    await this.storageReady;
     return (await this.storageInstance?.get('token'))??null;
   }
   async getUser(): Promise<any | null> {
+    await this.storageReady;
     return (await this.storageInstance?.get('user'))??null;
   }
   async isLoggedIn(): Promise<boolean>{

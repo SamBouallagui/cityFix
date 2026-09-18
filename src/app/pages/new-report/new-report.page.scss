@@ -1,0 +1,41 @@
+.input-item {
+  margin-bottom: 12px;
+  --border-radius: 8px;
+}
+
+.action-btn {
+  margin: 16px 0 4px;
+}
+
+.coords {
+  text-align: center;
+  font-size: 13px;
+  color: var(--ion-color-medium);
+  margin: 0 0 16px;
+}
+.location-map {
+  height: 180px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.photo-preview {
+  border-radius: 12px;
+  margin-bottom: 16px;
+  max-height: 220px;
+  object-fit: cover;
+}
+.map-hint {
+  text-align: center;
+  font-size: 12px;
+  color: var(--ion-color-medium);
+  margin: -8px 0 16px;
+}
+.login-btn {
+  margin-top: 16px;
+}
+
+.error-text {
+  text-align: center;
+  font-size: 14px;
+}
